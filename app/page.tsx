@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSocket } from '@/lib/socket-provider';
-import styles from './page.module.css';
+import styles from '../styles/page.module.css';
 
 interface Message {
   id: string;
