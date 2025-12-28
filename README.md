@@ -80,6 +80,7 @@ This application can scale in different ways like:
 - additional body properties when adding messages (ex. sending images/files)
 - a user login into the UI to use that user instead of the socket id
 - a collection of events to be triggered on specific steps (ex. sending sms)
+- duplicate message strategy
 
 ## Getting Started
 
@@ -102,6 +103,19 @@ JWT is chosen because of the following factors:
 - Flexibility: Can include user claims and expiration
 - Scalability: Works well in distributed systems
 
+
+## Testing
+
+### Unit testing (Jest)
+```bash
+npm run test
+```
+
+### Integration testing (Cypress)
+Run with server auto start
+```bash
+npm run test:e2e
+```
 
 ## API Testing
 
