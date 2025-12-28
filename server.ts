@@ -1,10 +1,10 @@
-import { createServer } from 'http';
-import { parse } from 'url';
-import next from 'next';
-import { Server, Socket } from 'socket.io';
+import { createServer } from "http";
+import { parse } from "url";
+import next from "next";
+import { Server, Socket } from "socket.io";
 
-const dev = process.env.NODE_ENV !== 'production';
-const hostname = 'localhost';
+const dev = process.env.NODE_ENV !== "production";
+const hostname = "localhost";
 const port = 3000;
 
 const app = next({ dev, hostname, port });
@@ -16,6 +16,16 @@ interface MessageData {
   timestamp: string;
 }
 
+// Mock email sending
+const sendEmail = (user: string, message: string): Promise<void> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log(`email sent to ${user} with ${message}`);
+      resolve();
+    }, 1000);
+  });
+};
+
 app.prepare().then(() => {
   const httpServer = createServer(async (req, res) => {
     if (!req.url) return;
@@ -25,26 +35,31 @@ app.prepare().then(() => {
 
   const io = new Server(httpServer, {
     cors: {
-      origin: '*',
+      origin: "*",
     },
   });
 
   // Socket.IO logic
-  io.on('connection', (socket: Socket) => {
-    console.log('User connected:', socket.id);
+  io.on("connection", (socket: Socket) => {
+    console.log("User connected:", socket.id);
 
-    socket.on('send-message', (message: string) => {
+    socket.on("send-message", (message: string) => {
       const messageData: MessageData = {
         id: socket.id,
         message,
         timestamp: new Date().toISOString(),
       };
-      
-      io.emit('receive-message', messageData);
+
+      console.log("Sending email...");
+      sendEmail(socket.id, message).catch((err) => {
+        console.error("Error sending email:", err);
+      });
+
+      io.emit("receive-message", messageData);
     });
 
-    socket.on('disconnect', () => {
-      console.log('User disconnected:', socket.id);
+    socket.on("disconnect", () => {
+      console.log("User disconnected:", socket.id);
     });
   });
 
