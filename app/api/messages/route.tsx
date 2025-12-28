@@ -1,7 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { messageStore } from '@/lib/messageStore';
+import { validateToken } from '@/lib/jwtUtils';
 
 export async function GET(request: NextRequest) {
+  // Extract and validate JWT token from headers
+  const authHeader = request.headers.get('Authorization');
+  const token = authHeader?.split(' ')[1] || '';
+
+  if (!token) {
+    return NextResponse.json(
+      { error: 'Unauthorized - Missing token' },
+      { status: 401 }
+    );
+  }
+
+  if (!validateToken(token)) {
+    return NextResponse.json(
+      { error: 'Unauthorized - Invalid or expired token' },
+      { status: 401 }
+    );
+  }
+
   const messages = messageStore.getAll();
 
   const searchParams = request.nextUrl.searchParams;

@@ -3,6 +3,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { generateToken } from "@/lib/jwtUtils";
 
 type MessagePayload = {
   user: string;
@@ -63,10 +64,21 @@ const POST = async (request: NextRequest) => {
   }
 };
 
+// Generate a valid token for testing
+const validToken = generateToken({ username: "testuser", role: "user" });
+
 // Helper to create mock NextRequest
 const createMockRequest = <T,>(body: T): NextRequest => {
   return {
     json: async () => body,
+    headers: {
+      get: (key: string) => {
+        if (key === 'Authorization') {
+          return `Bearer ${validToken}`;
+        }
+        return null;
+      },
+    },
   } as NextRequest;
 };
 
