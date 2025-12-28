@@ -1,0 +1,475 @@
+{
+  "info": {
+    "name": "Messages API",
+    "description": "Collection for testing the Messages API and Add Message API with JWT authentication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Generate Test Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('jwt_token', jsonData.token);",
+                  "    pm.environment.set('jwt_token', jsonData.token);",
+                  "    console.log('Token saved:', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/test/generate-token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "test", "generate-token"]
+            },
+            "description": "Generate a JWT token for testing (Development only)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Get All Messages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/messages",
+              "host": ["{{base_url}}"],
+              "path": ["api", "messages"]
+            },
+            "description": "Retrieve all messages with default pagination"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Messages with Pagination",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/messages?page=1&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "messages"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "5",
+                  "description": "Items per page (default: 10)"
+                }
+              ]
+            },
+            "description": "Retrieve messages with custom pagination"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Messages by User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/messages?user=john",
+              "host": ["{{base_url}}"],
+              "path": ["api", "messages"],
+              "query": [
+                {
+                  "key": "user",
+                  "value": "john",
+                  "description": "Filter by username"
+                }
+              ]
+            },
+            "description": "Search messages by username"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Messages by Content",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/messages?message=hello",
+              "host": ["{{base_url}}"],
+              "path": ["api", "messages"],
+              "query": [
+                {
+                  "key": "message",
+                  "value": "hello",
+                  "description": "Filter by message content"
+                }
+              ]
+            },
+            "description": "Search messages by content"
+          },
+          "response": []
+        },
+        {
+          "name": "Search with Multiple Filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/messages?user=john&message=hello&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "messages"],
+              "query": [
+                {
+                  "key": "user",
+                  "value": "john"
+                },
+                {
+                  "key": "message",
+                  "value": "hello"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Search messages with multiple filters and pagination"
+          },
+          "response": []
+        },
+        {
+          "name": "Test Invalid Pagination",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/messages?page=0&limit=-5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "messages"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Invalid page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "-5",
+                  "description": "Invalid limit"
+                }
+              ]
+            },
+            "description": "Test validation for invalid pagination parameters"
+          },
+          "response": []
+        },
+        {
+          "name": "Test Unauthorized (No Token)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/messages",
+              "host": ["{{base_url}}"],
+              "path": ["api", "messages"]
+            },
+            "description": "Test request without authentication token"
+          },
+          "response": []
+        },
+        {
+          "name": "Test Invalid Token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "invalid.token.here",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/messages",
+              "host": ["{{base_url}}"],
+              "path": ["api", "messages"]
+            },
+            "description": "Test request with invalid token"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Add Message",
+      "item": [
+        {
+          "name": "Create Message",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    console.log('Message created:', jsonData.data);",
+                  "    console.log('Total messages:', jsonData.totalMessages);",
+                  "    ",
+                  "    pm.test('Status code is 201', function () {",
+                  "        pm.response.to.have.status(201);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Response has success flag', function () {",
+                  "        pm.expect(jsonData.success).to.be.true;",
+                  "    });",
+                  "    ",
+                  "    pm.test('Response contains message data', function () {",
+                  "        pm.expect(jsonData.data).to.have.property('id');",
+                  "        pm.expect(jsonData.data).to.have.property('user');",
+                  "        pm.expect(jsonData.data).to.have.property('message');",
+                  "        pm.expect(jsonData.data).to.have.property('timestamp');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user\": \"john_doe\",\n  \"message\": \"Hello, this is a test message!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/add-message",
+              "host": ["{{base_url}}"],
+              "path": ["api", "add-message"]
+            },
+            "description": "Create a new message"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Message - Missing User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Error message is correct', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql('User and message are required');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Message without user\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/add-message",
+              "host": ["{{base_url}}"],
+              "path": ["api", "add-message"]
+            },
+            "description": "Test validation - missing user field"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Message - Missing Message",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Error message is correct', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql('User and message are required');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user\": \"john_doe\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/add-message",
+              "host": ["{{base_url}}"],
+              "path": ["api", "add-message"]
+            },
+            "description": "Test validation - missing message field"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Message - Empty Body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/add-message",
+              "host": ["{{base_url}}"],
+              "path": ["api", "add-message"]
+            },
+            "description": "Test validation - empty request body"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Message - No Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 401', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test('Error message is correct', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql('Unauthorized - Missing token');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user\": \"john_doe\",\n  \"message\": \"Test message\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/add-message",
+              "host": ["{{base_url}}"],
+              "path": ["api", "add-message"]
+            },
+            "description": "Test authentication - request without token"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

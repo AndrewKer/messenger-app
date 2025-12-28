@@ -1,0 +1,38 @@
+## For future testing CI/CD with Postman and Newman
+
+name: API Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Start server
+      run: |
+        npm run build
+        npm start &
+        sleep 10
+    
+    - name: Install Newman
+      run: npm install -g newman
+    
+    - name: Run Postman Collection
+      run: newman run postman/messages-api.postman_collection.json \
+        --env-var "baseUrl=http://localhost:3000" \
+        --env-var "generateTokenUrl=http://localhost:3000/api/test/generate-token"

@@ -34,3 +34,28 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+## API Testing
+
+This project includes a Postman collection for easy API testing.
+
+### Quick Start with Postman
+
+1. Import the collection from `postman/messages-api.postman_collection.json`
+2. Run "Generate Test Token" to get a JWT token
+3. Test all endpoints with automatic authentication
+
+See [postman/README.md](postman/README.md) for detailed instructions.
+
+### Available Endpoints
+
+- `GET /api/messages` - Get all messages (with pagination and filters)
+- `GET /api/test/generate-token` - Generate JWT token (dev only)
+
+### Query Parameters
+
+- `page` - Page number (default: 1)
+- `limit` - Items per page (default: 10)
+- `user` - Filter by username
+- `message` - Filter by message content
